@@ -68,7 +68,6 @@ const DBClient = {
             })
         })
     },
-
     getBowls : () => {
         return new Promise( (resolve, reject) => {
             DBClient.database.collection('bowls').find().toArray( (err, results) => {
@@ -131,10 +130,15 @@ const DBClient = {
             })
         })
 
+    },
+    getBalanceObject : (id) => {
+        return new Promise ( (resolve, reject) => {
+            DBClient.database.collection('wallet_balance').findOne({ 'user_id' : parseInt(id) }, (err, userBalance) => {
+                if(err) return reject(err);
+                resolve(userBalance);
+            })
+        })
     }
-
-
-
 }
 
 module.exports = DBClient;
