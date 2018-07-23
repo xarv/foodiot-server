@@ -10,5 +10,20 @@ router.post('/credit/:id', function(req, res, next) {
   })
 })
   
+/* params :
+    walletTransaction : WalletTransaction object 
+*/
+function updateWalletTransactions (walletTransaction) {
+  DBClient.updateWalletTransactions(walletTransaction).then(result => {
+    
+  });
+}
+  
+function WalletTransaction(id, amount, type, merchantName) {
+  this.id = id;
+  this.amount = amount;
+  this.type = type;
+  this.merchantName = merchantName;
+}
 
 module.exports = router;
