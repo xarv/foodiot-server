@@ -9,4 +9,10 @@ router.get('/list', function(req, res, next) {
   })
 });
 
+router.get('/:id', (req, res, next) => {
+  DBClient.getUserByID(req.params.id).then( result => {
+    res.json(result);
+  })
+})
+
 module.exports = router;
