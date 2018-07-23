@@ -143,7 +143,7 @@ const DBClient = {
 
     updateWalletTransactions : (walletTransaction) => {
       id = parseInt(walletTransaction.id);
-      amount = parseDouble(walletTransaction.amount);
+      amount = parseFloat(walletTransaction.amount);
       type = parseInt(walletTransaction.type);
 
       return new Promise ( (resolve, reject) => {
