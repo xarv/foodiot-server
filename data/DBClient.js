@@ -109,6 +109,28 @@ const DBClient = {
                 resolve(bowl);
             })
         }) 
+    },
+
+    setBowlQRReaderMapping : ( bowlId, qrReaderId ) => {
+        bowlId = parseInt(bowlId);
+        qrReaderId = parseInt(qrReaderId);
+
+        return new Promise ( (resolve, reject) => {
+            DBClient.database.collection('bowl_qr_reader_mapping').findOne({ $or : [ { 'bowl_id': bowlId},{ 'qr_reader_id': qrReaderId } ] }, (err, bowlReaderMapping) => {
+                if(err) return reject(err);
+                if(bowlReaderMapping) {
+                    return reject(new Error('Bowl Mapping Already Exist'));
+                }
+                else{
+                    DBClient.database.collection('bowl_qr_reader_mapping').insertOne( { 'bowl_id': bowlId, 'qr_reader_id' : qrReaderId, 'timestamp': new Date() }, (err, response) => {
+                        if(err) return reject(err); // retry logic can be implemented;
+                        resolve({'status': 201})
+                    });
+                }
+                
+            })
+        })
+
     }
 
 
