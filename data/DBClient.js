@@ -13,7 +13,6 @@ const DBClient = {
             }
         })
     },
-
     getUsers : () => {
         return new Promise( (resolve, reject) => {
             DBClient.database.collection('users').find().toArray( (err, results) => {
@@ -68,7 +67,50 @@ const DBClient = {
                 
             })
         })
+    },
+
+    getBowls : () => {
+        return new Promise( (resolve, reject) => {
+            DBClient.database.collection('bowls').find().toArray( (err, results) => {
+                if(err) {
+                    return reject(err);
+                }
+                resolve(results);
+            })
+        }) 
+    },
+
+    getBowlById : (id) => {
+        id = parseInt(id);
+        return new Promise ( (resolve, reject) => {
+            DBClient.database.collection('bowls').findOne({ 'bowl_id' : id }, (err, bowl) => {
+                if(err) return reject(err);
+                resolve(bowl);
+            })
+        }) 
+    },
+
+    getQRReaders : () => {
+        return new Promise( (resolve, reject) => {
+            DBClient.database.collection('qrReaders').find().toArray( (err, results) => {
+                if(err) {
+                    return reject(err);
+                }
+                resolve(results);
+            })
+        }) 
+    },
+
+    getQRReaderById : ( id ) => {
+        id = parseInt(id);
+        return new Promise ( (resolve, reject) => {
+            DBClient.database.collection('qrReaders').findOne({ 'qr_reader_id' : id }, (err, bowl) => {
+                if(err) return reject(err);
+                resolve(bowl);
+            })
+        }) 
     }
+
 
 
 }
