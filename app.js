@@ -12,7 +12,6 @@ var traysRouter = require('./routes/trays');
 var mappingsRouter = require('./routes/mappings');
 var bowlRouter = require('./routes/bowls');
 var qrReaderRouter = require('./routes/qrReader');
-var walletRouter = require('./routes/wallet');
 
 var app = express();
 
@@ -32,7 +31,6 @@ app.use('/trays', traysRouter);
 app.use('/mapping', mappingsRouter);
 app.use('/bowls', bowlRouter);
 app.use('/qrReaders', qrReaderRouter);
-app.use('/wallet', walletRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

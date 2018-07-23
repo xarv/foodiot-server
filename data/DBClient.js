@@ -131,28 +131,33 @@ const DBClient = {
         })
 
     },
-
-    getBalanceObject : (id) => {
+    getBalance : (id) => {
         return new Promise ( (resolve, reject) => {
             DBClient.database.collection('wallet_balance').findOne({ 'user_id' : parseInt(id) }, (err, userBalance) => {
-                if(err) return reject(err);
+                if(err) return reject(err); 
                 resolve(userBalance);
             })
         })
     },
 
     updateWalletTransactions : (walletTransaction) => {
-      id = parseInt(walletTransaction.id);
-      amount = parseFloat(walletTransaction.amount);
-      type = parseInt(walletTransaction.type);
-
-      return new Promise ( (resolve, reject) => {
-        DBClient.database.collection('wallet_transactions').insertOne( { 'user_id': id, 'amount' : amount,"type" : type,"merchant_name":walletTransaction.merchantName, 'date': new Date() }, (err, response) => {
-          if(err) return reject(err);
-          resolve({'status': 201})
-        });
-      })
-  }
+        console.log("updating wallter transaction ", walletTransaction)
+          return new Promise ( (resolve, reject) => {
+            DBClient.database.collection('wallet_transactions').insertOne( { 'user_id': parseInt(walletTransaction.id), 'amount' : walletTransaction.amount,"type" : walletTransaction.type,"merchant_name":walletTransaction.merchantName, 'timestamp': new Date() }, (err, response) => {
+                if(err) return reject(err); // retry logic can be implemented
+                resolve({'status': 201})
+            });
+        })
+    },
+    
+    updateBalance : (id, updatedBalance) => {
+        return new Promise ( (resolve, reject) => {
+            DBClient.database.collection('wallet_balance').updateOne({'user_id': parseInt(id)}, {$set:{'balance': updatedBalance}}, function(err, result) {
+                if(err) return reject(err);
+                resolve(result);
+            });            
+        })
+    }    
 }
 
 module.exports = DBClient;
