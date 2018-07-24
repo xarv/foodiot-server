@@ -150,6 +150,25 @@ const DBClient = {
             } )
         } )
     },
+    getItems: () => {
+        return new Promise( ( resolve, reject ) => {
+            DBClient.database.collection( 'items' ).find().toArray( ( err, results ) => {
+                if ( err ) {
+                    return reject( err );
+                }
+                resolve( results );
+            } )
+        } ) 
+    },
+    getItemById: (id) => {
+        id = parseInt( id );
+        return new Promise( ( resolve, reject ) => {
+            DBClient.database.collection( 'items' ).findOne( { 'item_id': id }, ( err, item ) => {
+                if ( err ) return reject( err );
+                resolve( item );
+            } )
+        } ) 
+    },
     getBalance : (id) => {
         return new Promise ( (resolve, reject) => {
             DBClient.database.collection('wallet_balance').findOne({ 'user_id' : parseInt(id) }, (err, userBalance) => {
