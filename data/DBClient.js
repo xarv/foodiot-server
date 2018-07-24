@@ -53,7 +53,7 @@ const DBClient = {
         userId = parseInt(userId);
 
         return new Promise ( (resolve, reject) => {
-            DBClient.database.collection('tray_user_mapping').findOne({ $or : [ { 'tray_id': trayId},{ 'user_id': userId } ] }, (err, trayUserMapping) => {
+            DBClient.database.collection('tray_user_mapping').findOne({ $or : [ { 'tray_id': trayId}, { 'user_id': userId } ] }, (err, trayUserMapping) => {
                 if(err) return reject(err);
                 if(trayUserMapping) {
                     return reject(new Error('Tray Mapping Already Exist'));
@@ -67,6 +67,24 @@ const DBClient = {
                 
             })
         })
+    },
+    deleteTrayUserMapping : (trayId) => {
+        trayId = parseInt(trayId);
+
+        return new Promise ( (resolve, reject) => {
+            DBClient.database.collection('tray_user_mapping').findOne( { 'tray_id': trayId }, (err, trayUserMapping) => {
+                if(err) return reject(err);
+                if(!trayUserMapping) {
+                    resolve({ 'status' : 202})
+                }
+                else {
+                    DBClient.database.collection('tray_user_mapping').deleteOne( { 'tray_id': trayId } , (err, obj) => {
+                        if(err) return reject(err);
+                        resolve({ 'status' : 202})
+                    })
+                }
+            })
+        }) 
     },
     getBowls : () => {
         return new Promise( (resolve, reject) => {
@@ -130,6 +148,25 @@ const DBClient = {
             })
         })
 
+    }, 
+
+    deleteBowlQRReaderMapping : (bowlId) => {
+        bowlId = parseInt(bowlId);
+
+        return new Promise ( (resolve, reject) => {
+            DBClient.database.collection('bowl_qr_reader_mapping').findOne( { 'bowl_id': bowlId }, (err, bowlQRMapping) => {
+                if(err) return reject(err);
+                if(!bowlQRMapping) {
+                    resolve( { 'status' : 202 } )
+                }
+                else {
+                    DBClient.database.collection('bowl_qr_reader_mapping').deleteOne( { 'bowl_id': bowlId } , (err, obj) => {
+                        if(err) return reject(err);
+                        resolve( { 'status' : 202 } )
+                    })
+                }
+            })
+        }) 
     },
     setBowlItemMapping: ( bowlId, itemId ) => {
         bowlId = parseInt( bowlId );
@@ -179,13 +216,16 @@ const DBClient = {
     },
 
     updateWalletTransactions : (walletTransaction) => {
-        console.log("updating wallter transaction ", walletTransaction)
-          return new Promise ( (resolve, reject) => {
-            DBClient.database.collection('wallet_transactions').insertOne( { 'user_id': parseInt(walletTransaction.id), 'amount' : walletTransaction.amount,"type" : walletTransaction.type,"merchant_name":walletTransaction.merchantName, 'timestamp': new Date() }, (err, response) => {
-                if(err) return reject(err); // retry logic can be implemented
-                resolve({'status': 201})
-            });
-        })
+      id = parseInt(walletTransaction.id);
+      amount = parseDouble(walletTransaction.amount);
+      type = parseInt(walletTransaction.type);
+
+      return new Promise ( (resolve, reject) => {
+        DBClient.database.collection('wallet_transactions').insertOne( { 'user_id': id, 'amount' : amount,"type" : type,"merchant_name":walletTransaction.merchantName, 'date': new Date() }, (err, response) => {
+          if(err) return reject(err);
+          resolve({'status': 201})
+        });
+      })
     },
     
     updateBalance : (id, updatedBalance) => {
@@ -196,6 +236,7 @@ const DBClient = {
             });            
         })
     }    
+
 }
 
 module.exports = DBClient;
