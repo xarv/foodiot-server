@@ -15,4 +15,32 @@ router.get('/:id', (req, res, next) => {
   })
 })
 
+router.post('/:bowl_id/delta/:delta', ( req, res, next ) => {
+  var delta = parseFloat(req.params.delta);
+  delta = Math.round(delta)
+  bowlId = parseInt(req.params.bowl_id);
+
+  DBClient.getBowlQRReaderMapping(bowlId, -1).then( mapping => {
+    var qrReaderId = mapping.qr_reader_id;
+
+    var redisKey = `qr_reader_${qrReaderId}_user`
+    
+    RedisClient.get(redisKey).then( user_id => {
+      if(!user_id){
+        res.status( 500 ).json( { error: 'something went wrong' } );
+      }
+      var userItemRedisKey = `user_${user_id}_bowl_${bowlId}`;
+
+      RedisClient.get(userItemRedisKey).then( value => {
+        RedisClient.set(userItemRedisKey, delta + (value || 0)).then(result => {
+          if(result === 'OK') {
+            return res.json({ status : result})
+          }
+          res.status(500).json({ error: 'something went wrong' })
+        })
+      })
+    });
+  })  
+})
+
 module.exports = router;

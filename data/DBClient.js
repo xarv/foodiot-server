@@ -48,6 +48,15 @@ const DBClient = {
             })
         }) 
     },
+    getTrayUserMapping : (trayId) => {
+        trayId = parseInt(trayId);
+        return new Promise( (resolve, reject) => {
+            DBClient.database.collection('tray_user_mapping').findOne( { 'tray_id': trayId }, (err, trayUserMapping) =>{
+                if(err) return reject(err);
+                resolve(trayUserMapping);
+            })
+        });
+    },
     setTrayUserMapping : (trayId, userId) => {
         trayId = parseInt(trayId);
         userId = parseInt(userId);
@@ -127,7 +136,17 @@ const DBClient = {
             })
         }) 
     },
+    getBowlQRReaderMapping : ( bowlId, qrReaderId ) => {
+        bowlId = parseInt(bowlId) || -1;
+        qrReaderId = parseInt(qrReaderId) || -1;
 
+        return new Promise( (resolve,reject) => {
+            DBClient.database.collection('bowl_qr_reader_mapping').findOne({ $or : [ { 'bowl_id': bowlId},{ 'qr_reader_id': qrReaderId } ] }, (err, mapping) => {
+                if(err) return reject(err);
+                resolve(mapping);
+            })
+        });
+    },
     setBowlQRReaderMapping : ( bowlId, qrReaderId ) => {
         bowlId = parseInt(bowlId);
         qrReaderId = parseInt(qrReaderId);

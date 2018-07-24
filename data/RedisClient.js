@@ -25,6 +25,15 @@ const RedisClient = {
                 resolve(result);
             })
         })
+    },
+
+    delete : (key) => {
+        return new Promise( (resolve, reject) => {
+            RedisClient.client.del( key, (err, result) => {
+                if(err) return reject(err);
+                resolve(result);
+            } )
+        })
     }
 
 }
