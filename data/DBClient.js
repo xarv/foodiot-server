@@ -168,7 +168,25 @@ const DBClient = {
             })
         }) 
     },
+    setBowlItemMapping: ( bowlId, itemId ) => {
+        bowlId = parseInt( bowlId );
+        itemId = parseInt( itemId );
 
+        return new Promise( ( resolve, reject ) => {
+            DBClient.database.collection( 'bowl_item_mapping' ).findOne( { 'bowl_id': bowlId, 'itemId': { $ne: itemId } }, ( err, bowlItemMapping ) => {
+                if ( err ) return reject( err );
+                if ( bowlItemMapping ) {
+                    return reject( new Error( 'Bowl Mapping Already Exist ' ) );
+                }
+                else {
+                    DBClient.database.collection( 'bowl_item_mapping' ).insertOne( { 'bowl_id': bowlId, 'itemId': itemId, 'timestamp': new Date() }, ( err, response ) => {
+                        if ( err ) return reject( err ); // retry logic can be implemented;
+                        resolve( { 'status': 201 } )
+                    });
+                }
+            } )
+        } )
+    },
     getBalance : (id) => {
         return new Promise ( (resolve, reject) => {
             DBClient.database.collection('wallet_balance').findOne({ 'user_id' : parseInt(id) }, (err, userBalance) => {

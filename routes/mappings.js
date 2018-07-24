@@ -28,7 +28,16 @@ router.post('/bowl/:bowl_id/qrReader/:qr_reader_id', (req, res, next) => {
   .catch( err => {
     res.status(400).json({ error  : err.message});
   })
-})
+} )
+
+router.post( '/bowl/:bowl_id/item/:item_id', ( req, res, next ) => {
+  DBClient.setBowlItemMapping( req.params.bowl_id, req.params.item_id ).then( result => {
+    res.json( result );
+  } )
+    .catch( err => {
+      res.status( 400 ).json( { error: err.message } );
+    } )
+} )
 
 router.delete('/bowlQrReader/:bowl_id', (req, res, next) => {
   DBClient.deleteBowlQRReaderMapping(req.params.bowl_id).then( result => {
