@@ -149,7 +149,6 @@ const DBClient = {
         })
 
     }, 
-
     deleteBowlQRReaderMapping : (bowlId) => {
         bowlId = parseInt(bowlId);
 
@@ -183,6 +182,24 @@ const DBClient = {
                         if ( err ) return reject( err ); // retry logic can be implemented;
                         resolve( { 'status': 201 } )
                     });
+                }
+            } )
+        } )
+    },
+    deleteBowlItemMapping: ( bowlId ) => {
+        bowlId = parseInt( bowlId );
+
+        return new Promise( ( resolve, reject ) => {
+            DBClient.database.collection( 'bowl_item_mapping' ).findOne( { 'bowl_id': bowlId }, ( err, bowlItemMapping ) => {
+                if ( err ) return reject( err );
+                if ( !bowlItemMapping ) {
+                    resolve( { 'status': 202 } )
+                }
+                else {
+                    DBClient.database.collection( 'bowl_item_mapping' ).deleteOne( { 'bowl_id': bowlId }, ( err, obj ) => {
+                        if ( err ) return reject( err );
+                        resolve( { 'status': 202 } )
+                    } )
                 }
             } )
         } )
