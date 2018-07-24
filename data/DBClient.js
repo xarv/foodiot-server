@@ -148,7 +148,7 @@ const DBClient = {
             })
         })
 
-    },
+    }, 
 
     deleteBowlQRReaderMapping : (bowlId) => {
         bowlId = parseInt(bowlId);
@@ -169,10 +169,10 @@ const DBClient = {
         }) 
     },
 
-    getBalanceObject : (id) => {
+    getBalance : (id) => {
         return new Promise ( (resolve, reject) => {
             DBClient.database.collection('wallet_balance').findOne({ 'user_id' : parseInt(id) }, (err, userBalance) => {
-                if(err) return reject(err);
+                if(err) return reject(err); 
                 resolve(userBalance);
             })
         })
@@ -189,7 +189,17 @@ const DBClient = {
           resolve({'status': 201})
         });
       })
-    }
+    },
+    
+    updateBalance : (id, updatedBalance) => {
+        return new Promise ( (resolve, reject) => {
+            DBClient.database.collection('wallet_balance').updateOne({'user_id': parseInt(id)}, {$set:{'balance': updatedBalance}}, function(err, result) {
+                if(err) return reject(err);
+                resolve(result);
+            });            
+        })
+    }    
+
 }
 
 module.exports = DBClient;
