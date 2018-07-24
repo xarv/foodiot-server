@@ -53,7 +53,7 @@ const DBClient = {
         userId = parseInt(userId);
 
         return new Promise ( (resolve, reject) => {
-            DBClient.database.collection('tray_user_mapping').findOne({ $or : [ { 'tray_id': trayId},{ 'user_id': userId } ] }, (err, trayUserMapping) => {
+            DBClient.database.collection('tray_user_mapping').findOne({ $or : [ { 'tray_id': trayId}, { 'user_id': userId } ] }, (err, trayUserMapping) => {
                 if(err) return reject(err);
                 if(trayUserMapping) {
                     return reject(new Error('Tray Mapping Already Exist'));
@@ -67,6 +67,24 @@ const DBClient = {
                 
             })
         })
+    },
+    deleteTrayUserMapping : (trayId) => {
+        trayId = parseInt(trayId);
+
+        return new Promise ( (resolve, reject) => {
+            DBClient.database.collection('tray_user_mapping').findOne( { 'tray_id': trayId }, (err, trayUserMapping) => {
+                if(err) return reject(err);
+                if(!trayUserMapping) {
+                    resolve({ 'status' : 202})
+                }
+                else {
+                    DBClient.database.collection('tray_user_mapping').deleteOne( { 'tray_id': trayId } , (err, obj) => {
+                        if(err) return reject(err);
+                        resolve({ 'status' : 202})
+                    })
+                }
+            })
+        }) 
     },
     getBowls : () => {
         return new Promise( (resolve, reject) => {
@@ -132,6 +150,25 @@ const DBClient = {
 
     },
 
+    deleteBowlQRReaderMapping : (bowlId) => {
+        bowlId = parseInt(bowlId);
+
+        return new Promise ( (resolve, reject) => {
+            DBClient.database.collection('bowl_qr_reader_mapping').findOne( { 'bowl_id': bowlId }, (err, bowlQRMapping) => {
+                if(err) return reject(err);
+                if(!bowlQRMapping) {
+                    resolve( { 'status' : 202 } )
+                }
+                else {
+                    DBClient.database.collection('bowl_qr_reader_mapping').deleteOne( { 'bowl_id': bowlId } , (err, obj) => {
+                        if(err) return reject(err);
+                        resolve( { 'status' : 202 } )
+                    })
+                }
+            })
+        }) 
+    },
+
     getBalanceObject : (id) => {
         return new Promise ( (resolve, reject) => {
             DBClient.database.collection('wallet_balance').findOne({ 'user_id' : parseInt(id) }, (err, userBalance) => {
@@ -152,7 +189,7 @@ const DBClient = {
           resolve({'status': 201})
         });
       })
-  }
+    }
 }
 
 module.exports = DBClient;
