@@ -10,7 +10,8 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var traysRouter = require('./routes/trays');
 var mappingsRouter = require('./routes/mappings');
-var bowlRouter = require('./routes/bowls');
+var bowlRouter = require( './routes/bowls' );
+var itemRouter = require( './routes/items' );
 var qrReaderRouter = require('./routes/qrReader');
 
 var app = express();
@@ -29,7 +30,8 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/trays', traysRouter);
 app.use('/mapping', mappingsRouter);
-app.use('/bowls', bowlRouter);
+app.use( '/bowls', bowlRouter );
+app.use( '/items', itemRouter );
 app.use('/qrReaders', qrReaderRouter);
 
 // catch 404 and forward to error handler

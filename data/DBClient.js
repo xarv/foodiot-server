@@ -149,7 +149,6 @@ const DBClient = {
         })
 
     }, 
-
     deleteBowlQRReaderMapping : (bowlId) => {
         bowlId = parseInt(bowlId);
 
@@ -186,6 +185,43 @@ const DBClient = {
                 }
             } )
         } )
+    },
+    deleteBowlItemMapping: ( bowlId ) => {
+        bowlId = parseInt( bowlId );
+
+        return new Promise( ( resolve, reject ) => {
+            DBClient.database.collection( 'bowl_item_mapping' ).findOne( { 'bowl_id': bowlId }, ( err, bowlItemMapping ) => {
+                if ( err ) return reject( err );
+                if ( !bowlItemMapping ) {
+                    resolve( { 'status': 202 } )
+                }
+                else {
+                    DBClient.database.collection( 'bowl_item_mapping' ).deleteOne( { 'bowl_id': bowlId }, ( err, obj ) => {
+                        if ( err ) return reject( err );
+                        resolve( { 'status': 202 } )
+                    } )
+                }
+            } )
+        } )
+    },
+    getItems: () => {
+        return new Promise( ( resolve, reject ) => {
+            DBClient.database.collection( 'items' ).find().toArray( ( err, results ) => {
+                if ( err ) {
+                    return reject( err );
+                }
+                resolve( results );
+            } )
+        } ) 
+    },
+    getItemById: (id) => {
+        id = parseInt( id );
+        return new Promise( ( resolve, reject ) => {
+            DBClient.database.collection( 'items' ).findOne( { 'item_id': id }, ( err, item ) => {
+                if ( err ) return reject( err );
+                resolve( item );
+            } )
+        } ) 
     },
     getBalance : (id) => {
         return new Promise ( (resolve, reject) => {
