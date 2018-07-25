@@ -20,7 +20,7 @@ router.post('/:bowl_id/delta/:delta', ( req, res, next ) => {
   var delta = parseFloat(req.params.delta);
   delta = Math.round(delta)
   delta = parseInt(delta)
-  
+
   bowlId = parseInt(req.params.bowl_id);
 
   DBClient.getBowlQRReaderMapping(bowlId, -1).then( mapping => {
@@ -30,7 +30,7 @@ router.post('/:bowl_id/delta/:delta', ( req, res, next ) => {
     
     RedisClient.get(redisKey).then( user_id => {
       if(!user_id){
-        res.status( 500 ).json( { error: 'something went wrong' } );
+        return res.status( 500 ).json( { error: 'something went wrong' } );
       }
       var userItemRedisKey = `user_${user_id}_bowl_${bowlId}`;
 
