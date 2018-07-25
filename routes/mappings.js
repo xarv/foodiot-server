@@ -99,7 +99,7 @@ router.post('/qrReader/:qr_reader/tray/:tray_id', (req, res, next ) => {
     var trayUserMapping = results;
 
     if( !trayUserMapping ) {
-      res.status( 400 ).json( { error: 'invalid tray id' } );
+      return res.status( 400 ).json( { error: 'invalid tray id' } );
     }
 
     // Redis Key which maintains which was the last user assigned to the qr reader
