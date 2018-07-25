@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var DBClient = require('../data/DBClient');
 var RedisClient = require('../data/RedisClient');
-var uuid = require('uuid/v4');
+var uuidv4 = require('uuid/v4');
 
 /* 
   Create the initial mapping between user and tray
