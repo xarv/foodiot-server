@@ -301,7 +301,7 @@ const DBClient = {
     },
 
     markMealComplete : (mealId, userId) => {
-        mealId = parseInt(mealId);
+        mealId = mealId;
         userId = parseInt(userId);
 
         return new Promise( (resolve, reject) => {
@@ -310,7 +310,10 @@ const DBClient = {
                 if(!meal) {
                     return reject('No meal found')
                 }
-
+                DBClient.database.collection( 'meals' ).updateOne( {'$and' : [ {'user_id': userId} , {'meal_id' : mealId} ] }, { $set: { 'status' : 'COMPLETED' } }, (err, result) => {
+                    if(err) reject(err);
+                    resolve(result)
+                } )
             });
         })
     },
