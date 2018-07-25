@@ -94,7 +94,7 @@ router.delete( '/bowlItem/:bowl_id', ( req, res, next ) => {
 // /mappings/tray/:id/ Scanner calls it
 router.post('/qrReader/:qr_reader/tray/:tray_id', (req, res, next ) => {
 
-  DBClient.getTrayUserMapping(res.params.tray_id).then( results => {
+  DBClient.getTrayUserMapping(req.params.tray_id).then( results => {
     // We get user
     var trayUserMapping = results;
 
