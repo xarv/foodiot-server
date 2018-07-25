@@ -146,7 +146,7 @@ router.post('/qrReader/:qr_reader/tray/:tray_id', (req, res, next ) => {
 
 function completeUserBowlDelivery(bowlId, userId){
   // TODO : Redis Key is `user_${user_id}_bowl_${bowlId}`
-  Promise.resolve.then(() => {
+  Promise.resolve().then(() => {
     return DBClient.getBowlItemMapping(bowlId)
   })
   .then( (bowlItemMapping) => {
