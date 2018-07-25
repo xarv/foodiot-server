@@ -156,7 +156,7 @@ function completeUserBowlDelivery(bowlId, userId){
     return DBClient.getItemById(itemId)
   })
   .then( (item) => {
-    RedisClient.get(`user_${user_id}_bowl_${bowlId}`)
+    RedisClient.get(`user_${userId}_bowl_${bowlId}`)
     .then( (delta) => {
       if( delta >= 0) {
         return null;
@@ -168,7 +168,7 @@ function completeUserBowlDelivery(bowlId, userId){
       if(!item) {
         return 
       }
-      RedisClient.get(`active_user_${user_id}_meal`)
+      RedisClient.get(`active_user_${userId}_meal`)
       .then( (mealId) =>  DBClient.upsertMealForUser(mealId, userId, item) )
       .then( (result) => {
 
