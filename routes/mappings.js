@@ -145,7 +145,6 @@ router.post('/qrReader/:qr_reader/tray/:tray_id', (req, res, next ) => {
 });
 
 function completeUserBowlDelivery(bowlId, userId){
-  // TODO : Redis Key is `user_${user_id}_bowl_${bowlId}`
   return Promise.resolve().then(() => {
     return DBClient.getBowlItemMapping(bowlId)
   })
@@ -160,6 +159,7 @@ function completeUserBowlDelivery(bowlId, userId){
   .then( (item) => {
     return RedisClient.get(`user_${userId}_bowl_${bowlId}`)
           .then( (delta) => {
+            delta = parseInt(delta);
             if( delta >= 0) {
               return null;
             }
@@ -176,6 +176,10 @@ function completeUserBowlDelivery(bowlId, userId){
               } )
               .then( (result) => {
                 return RedisClient.delete(`user_${userId}_bowl_${bowlId}`)
+              })
+              .catch( (err) => {
+                console.log(err);
+                throw err;
               })
           })
   })

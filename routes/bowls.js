@@ -19,6 +19,8 @@ router.get('/:id', (req, res, next) => {
 router.post('/:bowl_id/delta/:delta', ( req, res, next ) => {
   var delta = parseFloat(req.params.delta);
   delta = Math.round(delta)
+  delta = parseInt(delta)
+  
   bowlId = parseInt(req.params.bowl_id);
 
   DBClient.getBowlQRReaderMapping(bowlId, -1).then( mapping => {

@@ -287,7 +287,7 @@ const DBClient = {
                         resolve({status : 'ok'});
                     })
                 } else {
-                    var updatedItems = meal.items;
+                    var updatedItems = meal.items ;
                     updatedItems.push(item);
                     var newValues = { $set: {items: updatedItems } };
                     DBClient.database.collection( 'meals' ).updateOne( {'$and' : [ {'user_id': userId} , {'meal_id' : mealId} ] }, newValues, (err, result) =>{
