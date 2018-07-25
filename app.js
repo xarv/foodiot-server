@@ -5,6 +5,8 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var DBClient = require('./data/DBClient');
 DBClient.initialize();
+var RedisClient = require('./data/RedisClient');
+RedisClient.initialize(); 
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
