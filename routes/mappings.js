@@ -181,6 +181,7 @@ function completeUserBowlDelivery(bowlId, userId){
   })
   .catch(err => {
     console.log(err);
+    throw err;
   })  
 }
 
