@@ -171,7 +171,9 @@ function completeUserBowlDelivery(bowlId, userId){
         return 
       }
       RedisClient.get(`active_user_${userId}_meal`)
-      .then( (mealId) =>  DBClient.upsertMealForUser(mealId, userId, item) )
+      .then( (mealId) =>  {
+        DBClient.upsertMealForUser(mealId, userId, item)
+      } )
       .then( (result) => {
         return RedisClient.delete(`user_${userId}_bowl_${bowlId}`)
       })

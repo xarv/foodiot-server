@@ -276,7 +276,7 @@ const DBClient = {
     },
 
     upsertMealForUser : (mealId, userId, item) => {
-        mealId = parseInt(mealId);
+        mealId = mealId;
         userId = parseInt(userId);
         return new Promise( (resolve, reject) => {
             DBClient.database.collection( 'meals' ).findOne( {'$and' : [ {'user_id': userId} , {'meal_id' : mealId} ] }, (err, meal) => {
