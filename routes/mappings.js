@@ -10,8 +10,11 @@ var uuid = require('uuid/v4');
    we create mapping in mongo and creates a new mealid if the mapping is new.
  */
 router.post('/tray/:tray_id/user/:user_id', (req, res, next) => {
-  var userId = req.params.user_id
-  DBClient.setTrayUserMapping(req.params.tray_id, userId)
+  var userId = parseInt(req.params.user_id);
+  var trayId = parseInt(req.params.tray_id);
+  console.log(userId);
+
+  DBClient.setTrayUserMapping(trayId, userId)
   .then( result => {
     // We create a new field for
     RedisClient.get(`active_user_${userId}_meal`)
@@ -30,6 +33,7 @@ router.post('/tray/:tray_id/user/:user_id', (req, res, next) => {
     })
   })
   .catch( err => {
+    console.log(err);
     res.status(400).json({ error  : err.message});
   })
 });

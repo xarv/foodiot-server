@@ -7,6 +7,7 @@ const RedisClient = {
     },
 
     set : (key, value) => {
+        console.log(key);
         return new Promise( (resolve, reject) => {
             RedisClient.client.set(key, value, (err, result) => {
                 if(err) reject(err);
@@ -16,6 +17,7 @@ const RedisClient = {
     },
 
     get : (key) => {
+        console.log(key);
         return new Promise( (resolve, reject) => {
             RedisClient.client.get(key, (err, result) => {
                 if(err)  {
