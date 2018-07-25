@@ -10,17 +10,18 @@ var uuid = require('uuid/v4');
    we create mapping in mongo and creates a new mealid if the mapping is new.
  */
 router.post('/tray/:tray_id/user/:user_id', (req, res, next) => {
-  DBClient.setTrayUserMapping(req.params.tray_id, req.params.user_id)
+  var userId = req.params.user_id
+  DBClient.setTrayUserMapping(req.params.tray_id, userId)
   .then( result => {
     // We create a new field for
-    RedisClient.get(`active_user_${req.params.user_id}_meal`)
+    RedisClient.get(`active_user_${userId}_meal`)
     .then( mealId => {
       if(mealId){
         throw new Error('active mapping already exist');
       }
     })
     .then( () => {
-      RedisClient.set(`active_user_${user_id}_meal`, uuidv4()).then((redisResult) => {
+      RedisClient.set(`active_user_${userId}_meal`, uuidv4()).then((redisResult) => {
         if(redisResult !== 'OK'){
           throw new Error('error with redis');
         }
