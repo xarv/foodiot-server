@@ -2,11 +2,31 @@ var express = require('express');
 var router = express.Router();
 var DBClient = require('../data/DBClient');
 var RedisClient = require('../data/RedisClient');
+var uuid = require('uuid/v4');
 
-/* GET users listing. */
+/* 
+  Create the initial mapping between user and tray
+   if the mapping already exists then throws error
+   we create mapping in mongo and creates a new mealid if the mapping is new.
+ */
 router.post('/tray/:tray_id/user/:user_id', (req, res, next) => {
-  DBClient.setTrayUserMapping(req.params.tray_id, req.params.user_id).then( result => {
-    res.json(result);
+  DBClient.setTrayUserMapping(req.params.tray_id, req.params.user_id)
+  .then( result => {
+    // We create a new field for
+    RedisClient.get(`active_user_${user_id}_meal`)
+    .then( mealId => {
+      if(mealId){
+        throw new Error('active mapping already exist');
+      }
+    })
+    .then( () => {
+      RedisClient.set(`active_user_${user_id}_meal`, uuidv4()).then((redisResult) => {
+        if(redisResult !== 'OK'){
+          throw new Error('error with redis');
+        }
+        res.json(result);
+      })
+    })
   })
   .catch( err => {
     res.status(400).json({ error  : err.message});
@@ -14,8 +34,17 @@ router.post('/tray/:tray_id/user/:user_id', (req, res, next) => {
 });
 
 router.delete('/trayUser/:tray_id', (req, res, next) => {
-  DBClient.deleteTrayUserMapping(req.params.tray_id).then( result => {
-    res.json(result);
+  Promise.resolve()
+  .then( () => DBClient.getTrayUserMapping(req.params.tray_id) )
+  .then( (mapping) => mapping.user_id)
+  .then( (userId) => {
+
+    RedisClient.get( `active_user_${user_id}_meal` )
+    .then( mealId => DBClient.markMealComplete( mealId, userId))
+    .then( () => DBClient.deleteTrayUserMapping(req.params.tray_id))
+    .then( result => {
+      res.json(result);
+    })
   })
   .catch( err => {
     res.status(400).json({ error  : err.message});
@@ -91,7 +120,8 @@ router.post('/tray/:tray_id/qrReader/:qr_reader', (req, res, next ) => {
         // TODO
         // Query Bowl 
 
-        DBClient.getBowlQRReaderMapping(-1, req.params.qr_reader).then( mapping => {
+        DBClient.getBowlQRReaderMapping(-1, req.params.qr_reader)
+        .then( mapping => {
           if(!mapping) res.status( 400 ).json( { error: 'invalid qr id' } );
           var bowlId = mapping.bowl_id;
           completeUserBowlDelivery(bowlId, trayUserMapping.user_id);
@@ -111,7 +141,36 @@ router.post('/tray/:tray_id/qrReader/:qr_reader', (req, res, next ) => {
 
 function completeUserBowlDelivery(bowlId, userId){
   // TODO : Redis Key is `user_${user_id}_bowl_${bowlId}`
+  Promise.resolve.then(() => {
+    return DBClient.getBowlItemMapping(bowlId)
+  })
+  .then( (bowlItemMapping) => {
+    return bowlItemMapping.item_id;
+  })
+  .then( (itemId) => {
+    return DBClient.getItemById(itemId)
+  })
+  .then( (item) => {
+    RedisClient.get(`user_${user_id}_bowl_${bowlId}`)
+    .then( (delta) => {
+      if( delta >= 0) {
+        return null;
+      }
+      item.delta = -delta;
+      return item;
+    })
+    .then( (item) => {
+      if(!item) {
+        return 
+      }
+      RedisClient.get(`active_user_${user_id}_meal`)
+      .then( (mealId) =>  DBClient.upsertMealForUser(mealId, userId, item) )
+      .then( (result) => {
 
+      })
+    })
+  })
+  
 }
 
 module.exports = router;

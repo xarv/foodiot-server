@@ -186,18 +186,27 @@ const DBClient = {
             })
         }) 
     },
+    getBowlItemMapping : (bowlId) => {
+        bowlId = parseInt(bowlId) ;
+        return new Promise( (resolve, reject) => {
+            DBClient.database.collection( 'bowl_item_mapping' ).findOne( { 'bowl_id': bowlId } , (err, result) => {
+                if(err) reject(err);
+                resolve(result);
+            } );
+        });
+    },
     setBowlItemMapping: ( bowlId, itemId ) => {
         bowlId = parseInt( bowlId );
         itemId = parseInt( itemId );
 
         return new Promise( ( resolve, reject ) => {
-            DBClient.database.collection( 'bowl_item_mapping' ).findOne( { 'bowl_id': bowlId, 'itemId': { $ne: itemId } }, ( err, bowlItemMapping ) => {
+            DBClient.database.collection( 'bowl_item_mapping' ).findOne( { 'bowl_id': bowlId }, ( err, bowlItemMapping ) => {
                 if ( err ) return reject( err );
                 if ( bowlItemMapping ) {
                     return reject( new Error( 'Bowl Mapping Already Exist ' ) );
                 }
                 else {
-                    DBClient.database.collection( 'bowl_item_mapping' ).insertOne( { 'bowl_id': bowlId, 'itemId': itemId, 'timestamp': new Date() }, ( err, response ) => {
+                    DBClient.database.collection( 'bowl_item_mapping' ).insertOne( { 'bowl_id': bowlId, 'item_id': itemId, 'timestamp': new Date() }, ( err, response ) => {
                         if ( err ) return reject( err ); // retry logic can be implemented;
                         resolve( { 'status': 201 } )
                     });
@@ -233,6 +242,7 @@ const DBClient = {
             } )
         } ) 
     },
+
     getItemById: (id) => {
         id = parseInt( id );
         return new Promise( ( resolve, reject ) => {
@@ -242,6 +252,47 @@ const DBClient = {
             } )
         } ) 
     },
+
+    upsertMealForUser : (mealId, userId, item) => {
+        mealId = parseInt(mealId);
+        userId = parseInt(userId);
+        return new Promise( (resolve, reject) => {
+            DBClient.database.collection( 'meals' ).findOne( {'$and' : [ {'user_id': userId} , {'meal_id' : mealId} ] }, (err, meal) => {
+                if(err) return reject(err);
+                if(!meal) {
+                    DBClient.database.collection( 'meals' ).insertOne( { 'user_id': userId, 'meal_id' : mealId, 'status': 'ACTIVE', 'items': [item]}, (err, result) => {
+                        if(err) return reject(err);
+                        resolve({status : 'ok'});
+                    })
+                } else {
+                    var updatedItems = meal.items;
+                    updatedItems.push(item);
+                    var newValues = { $set: {items: updatedItems } };
+                    DBClient.database.collection( 'meals' ).updateOne( {'$and' : [ {'user_id': userId} , {'meal_id' : mealId} ] }, newValues, (err, result) =>{
+                        if(err) return reject(err);
+                        resolve({status : 'ok'});
+                    } )
+                }
+            } )
+        })
+
+    },
+
+    markMealComplete : (mealId, userId) => {
+        mealId = parseInt(mealId);
+        userId = parseInt(userId);
+
+        return new Promise( (resolve, reject) => {
+            DBClient.database.collection( 'meals' ).findOne( {'$and' : [ {'user_id': userId} , {'meal_id' : mealId} ] }, (err, meal) => {
+                if(err) return reject(err);
+                if(!meal) {
+                    return reject('No meal found')
+                }
+
+            });
+        })
+    },
+
     getBalance : (id) => {
         return new Promise ( (resolve, reject) => {
             DBClient.database.collection('wallet_balance').findOne({ 'user_id' : parseInt(id) }, (err, userBalance) => {
