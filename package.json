@@ -5,6 +5,7 @@
   "scripts": {
     "start": "nodemon ./bin/www",
     "generate-docs": "node ./docs.js",
+    "fake-delta-service": "node ./fakeDeltaService.js",
     "test": "jest"
   },
   "dependencies": {
@@ -19,10 +20,11 @@
     "jest": "^23.4.1",
     "jest-cli": "^23.4.1",
     "mongodb": "^3.1.1",
+    "mongodb-autoincrement": "^1.0.1",
     "morgan": "~1.9.0",
+    "node-fetch": "^2.2.0",
     "redis": "^2.8.0",
-    "uuid": "^3.3.2",
-    "mongodb-autoincrement": "^1.0.1"
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "nodemon": "^1.18.3"
