@@ -33,7 +33,7 @@ router.post('/:bowl_id/delta/:delta', ( req, res, next ) => {
       var userItemRedisKey = `user_${user_id}_bowl_${bowlId}`;
 
       RedisClient.get(userItemRedisKey).then( value => {
-        RedisClient.set(userItemRedisKey, delta + (value || 0)).then(result => {
+        RedisClient.set(userItemRedisKey, delta + (parseInt(value) || 0)).then(result => {
           if(result === 'OK') {
             return res.json({ status : result})
           }
