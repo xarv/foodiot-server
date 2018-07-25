@@ -269,6 +269,7 @@ const DBClient = {
         return new Promise( ( resolve, reject ) => {
             DBClient.database.collection( 'items' ).findOne( { 'item_id': id }, ( err, item ) => {
                 if ( err ) return reject( err );
+                console.log(item);
                 resolve( item );
             } )
         } ) 

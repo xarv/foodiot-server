@@ -150,9 +150,11 @@ function completeUserBowlDelivery(bowlId, userId){
     return DBClient.getBowlItemMapping(bowlId)
   })
   .then( (bowlItemMapping) => {
+    console.log(JSON.stringify(bowlItemMapping));
     return bowlItemMapping.item_id;
   })
   .then( (itemId) => {
+    console.log(itemId);
     return DBClient.getItemById(itemId)
   })
   .then( (item) => {
@@ -171,11 +173,13 @@ function completeUserBowlDelivery(bowlId, userId){
       RedisClient.get(`active_user_${userId}_meal`)
       .then( (mealId) =>  DBClient.upsertMealForUser(mealId, userId, item) )
       .then( (result) => {
-
+        return RedisClient.delete(`user_${userId}_bowl_${bowlId}`)
       })
     })
   })
-  
+  .catch(err => {
+    console.log(err);
+  })  
 }
 
 module.exports = router;
