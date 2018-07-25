@@ -129,7 +129,7 @@ router.post('/qrReader/:qr_reader/tray/:tray_id', (req, res, next ) => {
         .then( mapping => {
           if(!mapping) res.status( 400 ).json( { error: 'invalid qr id' } );
           var bowlId = mapping.bowl_id;
-          completeUserBowlDelivery(bowlId, parseInt(result));
+          return completeUserBowlDelivery(bowlId, parseInt(result));
         })
         .then( () => {
           RedisClient.set(redisKey, trayUserMapping.user_id).then( result => {
@@ -146,7 +146,7 @@ router.post('/qrReader/:qr_reader/tray/:tray_id', (req, res, next ) => {
 
 function completeUserBowlDelivery(bowlId, userId){
   // TODO : Redis Key is `user_${user_id}_bowl_${bowlId}`
-  Promise.resolve().then(() => {
+  return Promise.resolve().then(() => {
     return DBClient.getBowlItemMapping(bowlId)
   })
   .then( (bowlItemMapping) => {
@@ -158,26 +158,26 @@ function completeUserBowlDelivery(bowlId, userId){
     return DBClient.getItemById(itemId)
   })
   .then( (item) => {
-    RedisClient.get(`user_${userId}_bowl_${bowlId}`)
-    .then( (delta) => {
-      if( delta >= 0) {
-        return null;
-      }
-      item.delta = -delta;
-      return item;
-    })
-    .then( (item) => {
-      if(!item) {
-        return 
-      }
-      RedisClient.get(`active_user_${userId}_meal`)
-      .then( (mealId) =>  {
-        DBClient.upsertMealForUser(mealId, userId, item)
-      } )
-      .then( (result) => {
-        return RedisClient.delete(`user_${userId}_bowl_${bowlId}`)
-      })
-    })
+    return RedisClient.get(`user_${userId}_bowl_${bowlId}`)
+          .then( (delta) => {
+            if( delta >= 0) {
+              return null;
+            }
+            item.delta = -delta;
+            return item;
+          })
+          .then( (item) => {
+            if(!item) {
+              return 
+            }
+            return RedisClient.get(`active_user_${userId}_meal`)
+              .then( (mealId) =>  {
+                return DBClient.upsertMealForUser(mealId, userId, item)
+              } )
+              .then( (result) => {
+                return RedisClient.delete(`user_${userId}_bowl_${bowlId}`)
+              })
+          })
   })
   .catch(err => {
     console.log(err);
