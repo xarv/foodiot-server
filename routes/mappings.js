@@ -129,7 +129,7 @@ router.post('/qrReader/:qr_reader/tray/:tray_id', (req, res, next ) => {
         .then( mapping => {
           if(!mapping) res.status( 400 ).json( { error: 'invalid qr id' } );
           var bowlId = mapping.bowl_id;
-          completeUserBowlDelivery(bowlId, trayUserMapping.user_id);
+          completeUserBowlDelivery(bowlId, parseInt(result));
         })
         .then( () => {
           RedisClient.set(redisKey, trayUserMapping.user_id).then( result => {
