@@ -13,7 +13,7 @@ router.post('/tray/:tray_id/user/:user_id', (req, res, next) => {
   DBClient.setTrayUserMapping(req.params.tray_id, req.params.user_id)
   .then( result => {
     // We create a new field for
-    RedisClient.get(`active_user_${user_id}_meal`)
+    RedisClient.get(`active_user_${req.params.user_id}_meal`)
     .then( mealId => {
       if(mealId){
         throw new Error('active mapping already exist');
