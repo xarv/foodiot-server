@@ -15,4 +15,15 @@ router.get('/:id', (req, res, next) => {
   })
 })
 
+router.post('/signup', (req, res, next) => {
+	var userObj = req.body.user;
+	userObj["bmi"] = (parseInt(userObj.weight)/Math.pow((parseInt(userObj.height)/100),2)).toFixed(2);
+	console.log("user obj", userObj);
+  DBClient.addUser(userObj).then( result => {
+    res.json({message:"succeded"});
+  }, (err) => {
+  	res.json({message:"failed", reason: err})
+  })
+})
+
 module.exports = router;

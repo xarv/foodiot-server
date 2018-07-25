@@ -1,4 +1,6 @@
 const MongoClient = require('mongodb').MongoClient
+const autoIncrement = require('mongodb-autoincrement')
+
 
 const DBClient = {
     database : null,
@@ -12,6 +14,25 @@ const DBClient = {
                 DBClient.database = database.db('foodiot');
             }
         })
+    },
+
+    addUser: (userData) => {
+        console.log("inside add user db", userData)
+        return new Promise( (resolve, reject) => {
+            autoIncrement.getNextSequence(DBClient.database, "users", function (err, autoIndex) {
+                var collection = DBClient.database.collection("users");
+                collection.insertOne({
+                        user_id: autoIndex,
+                        ...userData
+                    }, ((err, results) => {
+                    if(err) {
+                        reject(err);
+                    }
+                    console.log("result", results)
+                    resolve(results);
+                }));
+            });
+        })         
     },
     getUsers : () => {
         return new Promise( (resolve, reject) => {
