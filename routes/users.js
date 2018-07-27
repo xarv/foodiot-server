@@ -26,4 +26,17 @@ router.post('/signup', (req, res, next) => {
   })
 })
 
+router.get('/:id/getMeals', (req, res, next) => {
+  var userId = parseInt(req.params.id)
+
+  DBClient.getMealsForUser( userId ).then( meals => {
+    console.log(meals)
+    res.json(meals);
+  })
+  .catch( err => {
+    console.log(err);
+    res.status(500).json( { err: 'something went wrong' } )
+  })
+})
+
 module.exports = router;

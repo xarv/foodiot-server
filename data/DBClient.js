@@ -46,13 +46,24 @@ const DBClient = {
     },
     getUserByID : (id) => {
         return new Promise ( (resolve, reject) => {
-            DBClient.database.collection('users').findOne({ 'user_id' : parseInt(id) }, (err, user) => {
+            DBClient.database.collection('users').findOne( { 'user_id' : parseInt(id) }, (err, user) => {
                 if(err) return reject(err);
                 console.log(user);
                 resolve(user);
             })
         }) 
     },
+    getMealsForUser : (id) => {
+        return new Promise( (resolve, reject) => {
+            DBClient.database.collection('meals').find( { 'user_id': id } ).toArray( (err, results) => {
+                if(err) {
+                    console.log(err);
+                    return reject(err);
+                }
+                resolve(results);
+            })
+        }); 
+    }, 
     getTrays : () => {
         return new Promise( (resolve, reject) => {
             DBClient.database.collection('trays').find().toArray( (err, results) => {
